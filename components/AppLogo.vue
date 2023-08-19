@@ -1,5 +1,5 @@
 <template>
-    <span @mouseleave="logoStartUp">
+    <span class="logo-wrapper" @mouseleave="logoStartUp">
         <span class="visually-hidden">Loqui</span>
         <canvas 
             ref="logoElement"
@@ -32,7 +32,7 @@ const logoStartUp = ref(() => {})
 
 const cancelLogoElementWatcher = watch(logoElement, () => {
     if(logoElement.value) {
-        const { size } = useLogoBuilder(logoElement.value, 'LOQUI', pallet.value, spread.value)
+        const { size } = useLogoBuilder(logoElement.value, 'loqui', pallet.value, spread.value)
         logoStartUp.value = size
         size()
         cancelLogoElementWatcher()
@@ -41,6 +41,9 @@ const cancelLogoElementWatcher = watch(logoElement, () => {
 </script>
 
 <style lang="scss" scoped>
+.logo-wrapper {
+    padding: 20px;
+}
 .logo-canvas {
     width: v-bind(width);
     height: 100%;
