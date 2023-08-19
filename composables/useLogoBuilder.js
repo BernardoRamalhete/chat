@@ -25,7 +25,7 @@ export default function (canvasElement, logoText, colorPallet, spreadVelocity = 
             this.cx = this.ox;
             this.cy = this.oy;
             /* original/ intial particle radius */
-            this.or = rand(1, 3);
+            this.or = rand(1, 2);
             this.cr = this.or;
             this.pv = 0;
             this.ov = 0;
@@ -84,7 +84,7 @@ export default function (canvasElement, logoText, colorPallet, spreadVelocity = 
     }
 
     function write() {
-        CT.font = `900 ${TEXTBOX.h}px verdana, sans-serif`;
+        CT.font = `900 ${TEXTBOX.h}px Vollkorn, sans-serif`;
         CT.textAlign = 'center';
         CT.textBaseline = 'middle';
         CT.letterSpacing = '8px';
