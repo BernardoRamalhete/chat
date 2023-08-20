@@ -46,6 +46,5 @@ const cancelLogoElementWatcher = watch(logoElement, () => {
 }
 .logo-canvas {
     width: v-bind(width);
-    height: 100%;
 }
 </style>
