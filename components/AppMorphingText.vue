@@ -1,5 +1,5 @@
 <template>
-    <div class="morphing-container">
+    <span class="morphing-container">
         <span ref="textElementOne" class="text"/>
         <span ref="textElementTwo" class="text"/>
         <svg id="filters">
@@ -16,7 +16,7 @@
             </defs>
         </svg>
         <span class="visually-hidden">{{ accessibilityText }}</span>
-    </div>
+    </span>
 </template>
 
 <script setup>
@@ -107,9 +107,11 @@ function animate() {
     runCooldown()
 }
 
+const svgHeight = ref('100px')
 onMounted(() => {
     textElementOne.value.textContent = text.value[textIndex.value % text.value.length]
     textElementTwo.value.textContent = text.value[(textIndex.value + 1) % text.value.length]
+    svgHeight.value = textElementOne.value.clientHeight + 'px'
     animate()
 })
 </script>
@@ -117,8 +119,14 @@ onMounted(() => {
 <style lang="scss" scoped>
 .morphing-container {
     filter: url(#threshold) blur(0.6px);
+    user-select: none;
     .text {
         position: absolute;
+        line-height: 1.2;
+    }
+
+    svg {
+        max-height: v-bind(svgHeight);
     }
 }
 </style>
