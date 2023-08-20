@@ -24,7 +24,7 @@ export default function (canvasElement, logoText, colorPallet, spreadVelocity = 
             /* current position */
             this.cx = this.ox;
             this.cy = this.oy;
-            /* original/ intial particle radius */
+            /* original/ initial particle radius */
             this.or = rand(1, 2);
             this.cr = this.or;
             this.pv = 0;
@@ -87,7 +87,7 @@ export default function (canvasElement, logoText, colorPallet, spreadVelocity = 
         CT.font = `900 ${TEXTBOX.h}px Vollkorn, sans-serif`;
         CT.textAlign = 'center';
         CT.textBaseline = 'middle';
-        CT.letterSpacing = '8px';
+        CT.letterSpacing = '4px';
         
         TEXTBOX.w = Math.round(CT.measureText(TEXTBOX.str).width);
         TEXTBOX.x = .5*(_C.width - TEXTBOX.w);
