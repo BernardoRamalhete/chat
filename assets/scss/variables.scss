@@ -4,6 +4,7 @@ $pure_black: #000;
 $light_background: #fafafa;
 $primary_blue: #3a86ff;
 $primary_pink: #ff006e;
+$light_pink: lighten($primary_pink, 35%);
 $primary_red: #da251c;
 $primary_orange: #fb5607;
 $primary_yellow: #ffbe0b;
@@ -12,5 +13,5 @@ $primary_purple: #8338ec;
 $title_color: $primary_purple;
 $text_color: #0d1b2a;
 
-$primary_button_gradient: linear-gradient(to top, #25aae1, #4481eb, #04befe, #3f86ed);
-$primary_button_box_shadow: 0 4px 15px 0 rgba(65, 132, 234, 0.75);
+$primary_button_gradient: linear-gradient(to top, #4bb5e2, #4481eb, #67d8fd, #3f86ed);
+$primary_button_box_shadow: 0 4px 15px 0 rgba(103, 215, 253, 0.7);
