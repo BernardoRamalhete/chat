@@ -17,6 +17,9 @@
     border: none;
     transition: all 0.4s ease;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     &:focus {
         outline: transparent;
     }
