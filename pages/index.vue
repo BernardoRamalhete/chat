@@ -11,7 +11,7 @@
                     <AppMorphingText :text="['Private Chats', 'Group Chats', 'All Encrypted']" :morphDuration="1"/>
                 </h1>
                 <p class="hero-text">
-                    Instantly connect with your friends and family with out sharing any information without your consent.
+                    Instantly connect with your friends and family while safeguarding your privacy and personal data. No more sharing information without your consent.
                 </p>
                 <span class="hero-cta">
                     <AppButton class="primary ">
@@ -87,7 +87,7 @@
                 width: 100%;
                 height: 80%;
                 top: 20%;
-                border-radius: 20px 20px 0 0;
+                border-radius: 40px 40px 0 0;
                 position: relative;
                 &:after {
                     content: '';
@@ -107,7 +107,7 @@
             &-container {
                 background-color: $light_pink;
                 grid-column: 1/3;
-                border-radius: 0 20px 20px 20px;
+                border-radius: 0 40px 40px 40px;
             }
         }
 
