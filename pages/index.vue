@@ -14,7 +14,7 @@
                     Instantly connect with your friends and family while safeguarding your privacy and personal data. No more sharing information without your consent.
                 </p>
                 <span class="hero-cta">
-                    <AppButton class="primary ">
+                    <AppButton class="primary" @click="signIn">
                         Join now
                     </AppButton>
                 </span>
@@ -23,7 +23,7 @@
         <div class="image-section">
             <div class="image-top"></div>
             <div class="button">
-                <AppButton class="primary">
+                <AppButton class="primary" @click="signIn">
                     Login With 
                     <Icon name="logos:google-icon" aria-hidden/>
                     <span class="visually-hidden">Google</span>
@@ -35,7 +35,10 @@
 </template>
 
 <script setup>
-
+const { user, signIn } = useFirebaseAuth()
+watch(user, () => {
+    if(user.value != undefined) navigateTo('/chat')
+})
 </script>
 
 <style lang="scss" scoped>
