@@ -78,6 +78,7 @@ function setMorphPhase(morphFraction) {
 
 function runCooldown() {
     morphStep.value = 0
+    if(!textElementOne.value || !textElementTwo.value) return
     textElementTwo.value.style.filter = ''
     textElementTwo.value.style.opacity = '100%'
 
@@ -85,8 +86,9 @@ function runCooldown() {
     textElementOne.value.style.opacity = '0%'
 }
 
+const animationFrame = ref(null)
 function animate() {
-    requestAnimationFrame(animate)
+    animationFrame.value = requestAnimationFrame(animate)
 
     let now = new Date()
     const shouldIncrementIndex = cooldown.value > 0
@@ -113,6 +115,10 @@ onMounted(() => {
     textElementTwo.value.textContent = text.value[(textIndex.value + 1) % text.value.length]
     svgHeight.value = textElementOne.value.clientHeight + 'px'
     animate()
+})
+
+onBeforeUnmount(() => {
+    cancelAnimationFrame(animationFrame.value)
 })
 </script>
 
