@@ -10,6 +10,8 @@ export default function() {
     const signIn = async () => {
         return signInWithPopup($auth, provider)
             .then((result) => {
+                const userCookie = useCookie('user')
+                userCookie.value = result.user
                 user.value = result.user
             })
             .catch((error) => {
