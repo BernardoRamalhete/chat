@@ -29,7 +29,51 @@
                     <span class="visually-hidden">Google</span>
                 </AppButton>
             </div>
-            <div class="image-container"></div>
+            <figure class="image-container">
+                <Icon class="emoji horns" name="fluent-emoji:sign-of-the-horns"/>
+                <Icon class="emoji fire" name="fluent-emoji:fire"/>
+                <Icon class="emoji whale" name="fluent-emoji:whale"/>
+                <Icon class="emoji banana" name="fluent-emoji:banana"/>
+                <Icon class="emoji hibiscus" name="fluent-emoji:hibiscus"/>
+                <Icon class="emoji smug" name="fluent-emoji:smiling-face-with-sunglasses"/>
+                <Icon class="emoji heart" name="fluent-emoji:red-heart"/>
+                <Icon class="emoji joystick" name="fluent-emoji:joystick"/>
+                <img 
+                    class="graph camera" 
+                    src="/images/camera.png" 
+                    alt=""
+                />
+                <img 
+                    class="graph target" 
+                    src="/images/target.png" 
+                    alt=""
+                />
+                <img 
+                    class="graph ghost" 
+                    src="/images/ghost.png" 
+                    alt=""
+                />
+                <img 
+                    class="graph chat" 
+                    src="/images/chat.png" 
+                    alt=""
+                />
+                <img 
+                    class="graph star" 
+                    src="/images/star.png" 
+                    alt=""
+                />
+                <img 
+                    class="person right" 
+                    src="/images/girl.webp" 
+                    alt=""
+                />
+                <img 
+                    class="person left" 
+                    src="/images/guy.webp" 
+                    alt=""
+                />
+            </figure>
         </div>
     </main>
 </template>
@@ -41,7 +85,7 @@ watch(user, () => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 
 .wrapper {
     display: grid;
@@ -111,6 +155,101 @@ watch(user, () => {
                 background-color: $light_pink;
                 grid-column: 1/3;
                 border-radius: 0 40px 40px 40px;
+                position: relative;
+                .person {
+                    position: absolute;
+                    max-height: 80vh;
+                    &.left{ 
+                        top: 50%;
+                        transform: scaleX(-1) translateY(-50%);
+                        left: -30%;
+                        filter: drop-shadow(20px 20px 30px rgba($dark_background, 0.4));
+                    }
+                    &.right {
+                        right: -20%;
+                        transform: scale(0.8);
+                        filter: drop-shadow(-20px 0px 20px rgba($dark_background, 0.3));
+                    }
+                }
+
+                .graph {
+                    position: absolute;
+                    &.camera {
+                        right: 5%;
+                        max-height: 10vh;
+                        transform: rotate(-15deg);
+                    }
+
+                    &.star {
+                        left: 50%;
+                        top: 14%;
+                        max-height: 12vh;
+                        transform: translateX(-50%) rotate(10deg);
+                    }
+
+                    &.target {
+                        max-height: 10vh;
+                        left: 30%;
+                        top: -18%;
+                    }
+
+                    &.ghost {
+                        bottom: 10%;
+                        max-height: 14vh;
+                        left: 40%;
+                        transform: translateX(-50%) rotate(20deg);
+                    }
+
+                    &.chat {
+                        left: 2%;
+                        max-height: 12vh;
+                        transform: rotate(-20deg);
+                    }
+                }
+
+                .emoji {
+                    position: absolute;
+                    font-size: 80px;
+                    filter: drop-shadow(0 0 0 white);
+
+                    &.joystick {
+                        top: 0;
+                        left: 0;
+                    }
+
+                    &.heart {
+                        bottom: 0; right: 0;
+                    }
+
+                    &.smug {
+                        bottom: 0; left: 0;
+                    }
+
+                    &.fire {
+                        top: 0; right: 0;
+                    }
+
+                    &.horns {
+                        top: 0; right: 20%;
+                    }
+
+                    &.hibiscus {
+                        bottom: 0; left: 20%;
+                    }
+
+                    &.whale {
+                        bottom: 0; right: 20%;
+                    }
+
+                    &.banana {
+                        top: 0; left: 40%;
+                        & > g {
+                            stroke: white;
+                            stroke-width: 2px;
+                            stroke-linejoin: round;
+                        }
+                    }
+                }
             }
         }
 
