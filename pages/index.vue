@@ -93,6 +93,9 @@ watch(user, () => {
     gap: 20px;
     padding: 60px;
     height: 100%;
+    overflow: hidden;
+    margin-inline: auto;
+    max-width: 2500px;
 
     .content-section {
         position: relative;
@@ -156,17 +159,31 @@ watch(user, () => {
                 grid-column: 1/3;
                 border-radius: 0 40px 40px 40px;
                 position: relative;
+                &:after {
+                    content: '';
+                    position: absolute;
+                    width: 110%;
+                    height: 60%;
+                    bottom: -12%;
+                    left: 55%;
+                    transform: translateX(-50%);
+                    background-image: linear-gradient(to top, rgba($light_background, 0.5) 30%, transparent);
+                    z-index: 2;
+                    border-radius: 0 0 40px 40px;
+                }
                 .person {
                     position: absolute;
                     max-height: 80vh;
+                    max-width: 35vw;
+                    z-index: 3;
                     &.left{ 
                         top: 50%;
                         transform: scaleX(-1) translateY(-50%);
-                        left: -30%;
-                        filter: drop-shadow(20px 20px 30px rgba($dark_background, 0.4));
+                        left: -20%;
+                        filter: drop-shadow(10px 20px 30px rgba($dark_background, 0.4));
                     }
                     &.right {
-                        right: -20%;
+                        right: -22%;
                         transform: scale(0.8);
                         filter: drop-shadow(-20px 0px 20px rgba($dark_background, 0.3));
                     }
@@ -174,9 +191,12 @@ watch(user, () => {
 
                 .graph {
                     position: absolute;
+                    z-index: 2;
                     &.camera {
-                        right: 5%;
+                        right: -4%;
+                        top: -1%;
                         max-height: 10vh;
+                        max-width: 7vw;
                         transform: rotate(-15deg);
                     }
 
@@ -184,70 +204,92 @@ watch(user, () => {
                         left: 50%;
                         top: 14%;
                         max-height: 12vh;
+                        max-width: 8vw;
                         transform: translateX(-50%) rotate(10deg);
                     }
 
                     &.target {
                         max-height: 10vh;
+                        max-width: 8vw;
                         left: 30%;
-                        top: -18%;
+                        top: -15%;
                     }
 
                     &.ghost {
-                        bottom: 10%;
+                        bottom: 20%;
                         max-height: 14vh;
-                        left: 40%;
-                        transform: translateX(-50%) rotate(20deg);
+                        max-width: 10vw;
+                        left: 52%;
+                        transform: translateX(-50%) rotate(-15deg);
                     }
 
                     &.chat {
                         left: 2%;
                         max-height: 12vh;
+                        max-width: 8vw;
                         transform: rotate(-20deg);
                     }
                 }
 
                 .emoji {
                     position: absolute;
-                    font-size: 80px;
-                    filter: drop-shadow(0 0 0 white);
+                    font-size: min(6vw, 100px);
+                    z-index: 2;
+                    filter: drop-shadow(2px 0 0 white) drop-shadow(-2px 0 0 white) drop-shadow(0 2px 0 white) drop-shadow(0 -2px 0 white) drop-shadow(1px 0 0 white) drop-shadow(-1px 0 0 white) drop-shadow(0 -1px 0 white) drop-shadow(0 1px 0 white) blur(0.5px);
 
                     &.joystick {
-                        top: 0;
+                        bottom: 25%;
                         left: 0;
+                        transform: rotate(-10deg);
                     }
 
                     &.heart {
-                        bottom: 0; right: 0;
+                        bottom: 40%;
+                        right: -5%;
+                        transform: rotate(20deg);
+                        font-size: min(8vw, 140px); 
                     }
 
                     &.smug {
-                        bottom: 0; left: 0;
+                        bottom: 12%; 
+                        left: -14%;
+                        font-size: min(10vw, 180px);
+                        transform: rotate(-30deg);
+                        opacity: 0.7;
                     }
 
                     &.fire {
-                        top: 0; right: 0;
+                        bottom: 5%; 
+                        left: 5%;
+                        font-size: min(7vw, 120px);
+                        transform: rotate(30deg);
                     }
 
                     &.horns {
-                        top: 0; right: 20%;
+                        bottom: 3%; 
+                        right: -5%;
+                        transform: rotate(15deg);
                     }
 
                     &.hibiscus {
-                        bottom: 0; left: 20%;
+                        bottom: -3%; 
+                        left: 30%;
+                        font-size: min(8vw, 140px);
+                        transform: rotate(20deg);
                     }
 
                     &.whale {
-                        bottom: 0; right: 20%;
+                        bottom: 12%; 
+                        right: 20%;
+                        font-size: min(8vw, 140px);
+                        transform: rotate(12deg);
+
                     }
 
                     &.banana {
-                        top: 0; left: 40%;
-                        & > g {
-                            stroke: white;
-                            stroke-width: 2px;
-                            stroke-linejoin: round;
-                        }
+                        bottom: -5%; 
+                        left: 60%;
+                        transform: rotate(15deg);
                     }
                 }
             }
