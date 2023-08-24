@@ -123,6 +123,9 @@ watch(user, () => {
             &-cta {
                 display: flex;
                 justify-content: flex-end;
+                button {
+                    z-index: 4;
+                }
             }
         }
     }
