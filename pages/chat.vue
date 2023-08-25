@@ -1,47 +1,96 @@
 <template>
     <div class="chat">
-        <aside class="chat-menu">
-            <button class="new">
-                <span class="icon">
-                    <Icon name="quill:add" aria-hidden/>
-                </span>
-                <span>New chat</span>
-            </button>
-            <div class="search">
-                <label for="chat-search" class="visually-hidden">
-                    Search
-                </label>
-                <input 
-                    id="chat-search" 
-                    type="text"
-                    placeholder="Search for..."
-                />
-                <span>
-                    <Icon 
-                        name="quill:search-alt" 
-                        aria-hidden
-                    />
-                </span>
-            </div>
-            <nav class="items">
-                <ul>
-                    <li v-for="chat in chats">
+        <div class="chat-main">
+            <aside 
+                class="chat-main-menu" 
+                :class="{ active: activeChat }"
+                @mouseenter="setActiveChat(true)" 
+                @mouseleave="setActiveChat(false)"
+            >
+                <header class="chat-main-menu-header">
+                    <button 
+                        class="new" 
+                        :class="{ active: activeChat }"
+                    >
+                        <span class="icon">
+                            <Icon name="quill:add" aria-hidden/>
+                        </span>
+                        <span class="text">New chat</span>
+                    </button>
+                    <div 
+                        class="search" 
+                        :class="{ active: activeChat }"
+                    >
+                        <label for="chat-search" class="visually-hidden">
+                            Search
+                        </label>
+                        <input 
+                            id="chat-search" 
+                            type="text"
+                            placeholder="Search for..."
+                        />
+                        <span>
+                            <Icon 
+                                name="quill:search-alt" 
+                                aria-hidden
+                            />
+                        </span>
+                    </div>
+                </header>
+                <nav 
+                    class="items" 
+                    :class="{ active: activeChat }"
+                >
+                    <ul>
+                        <li v-for="chat in chats">
+                            <button>
+                                <figure :class="getRandomColor()">
+                                    <img :src="chat.image" alt=""/>
+                                </figure>
+                                <p>
+                                    <strong>{{ chat.name }}</strong>
+                                    <span>{{ chat.status }}</span>
+                                </p>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+            <main class="chat-main-content">
+                <header class="chat-main-content-header">
+                    <figure>
+                        <img src="https://picsum.photos/seed/batata/200" alt=""/>
+                    </figure>
+                    <div class="chat-main-content-header-text">
+                        <span>
+                            <h2>Lora Carlson</h2>
+                            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, ut?</p>
+                        </span>
                         <button>
-                            <figure :class="getRandomColor()">
-                                <img :src="chat.image" alt=""/>
-                            </figure>
-                            <p>
-                                <span>{{ chat.name }}</span>
-                                <span>{{ chat.status }}</span>
-                            </p>
+                            <Icon name="quill:meatballs-h"/>
+                            <span class="visually-hidden">Chat actions</span>
                         </button>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
-        <main class="chat-content">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores temporibus sunt quas corrupti explicabo consectetur voluptas vitae est. Est libero illo voluptas maxime? Cumque incidunt quod facilis corporis vel quasi quas aliquam hic cupiditate nesciunt, excepturi, earum eum. Cum maxime quisquam eum possimus consequatur eaque suscipit. Sunt sit veniam odit vero laboriosam, quaerat nisi maiores obcaecati assumenda, odio ut amet commodi alias voluptates possimus maxime suscipit aut magni temporibus? Laboriosam, iure nulla eum rem saepe amet corrupti sapiente vitae laudantium harum ex reprehenderit optio vero magnam ipsum perspiciatis provident architecto esse sed tempore doloremque. Fuga incidunt dolorem obcaecati officia illum?
-        </main>
+                    </div>
+                </header>
+                <section class="chat-main-content-messages">
+                    <ul>
+                        <li 
+                            v-for="(message, index) in messages" 
+                            :key="message.id"
+                            :class="{ 
+                                inverted: message.author.name === 'Chris Larson',
+                                'same-author': messages[index + 1] != undefined && messages[index + 1].author.name === message.author.name
+                            }"
+                        >
+                            <figure>
+                                <img :src="message.author.avatar_url" alt=""/>
+                            </figure>
+                            <span v-html="message.content"/>
+                        </li>
+                    </ul>
+                </section>
+            </main>
+        </div>
     </div>
 </template>
 
@@ -67,14 +116,14 @@ const chats = reactive([
     {
  
         id: 55,
-        name: 'Rosetta Marshall',
+        name: 'Mathilda Vargas',
         status: 'rocket finger information perfect since breakfast upper surface mad all farther sleep church able moving term also cannot religious star handle different breathing morning',
         image: `https://picsum.photos/seed/place/200`
     },
     {
  
         id: 24,
-        name: 'Eric Harrington',
+        name: 'Maurice Gutierrez',
         status: 'kids fog upper vast pipe both son special common pass volume melted anyone fair today know facing stairs north negative successful dirty cost firm',
         image: `https://picsum.photos/seed/lady/200`
     },
@@ -155,6 +204,143 @@ function getRandomColor() {
 
     return colors[index]
 }
+
+const activeChat = ref(false)
+
+function setActiveChat(value) {
+    activeChat.value = value
+}
+
+const messages = reactive([
+    {
+        id: 40,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/general/200',
+            name: 'Chris Larson'
+        },
+        content: 'powder better is bad plural examine itself alive which minute bring shine continent spread escape law out beyond closely wait proper do came sides'
+    },
+    {
+        id: 87,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/gas/200',
+            name: 'Chris Larson'
+        },
+        content: 'local up nor chose structure dust crew gift properly donkey village at canal bowl name observe adventure stronger dream ancient problem several fish saw'
+    },
+    {
+        id: 68,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/occur/200',
+            name: 'Chris Larson'
+        },
+        content: 'load sell maybe gradually fresh pictured pretty now equally missing feet her respect football gain here dirt bad faster troops period course contain sitting'
+    },
+    {
+        id: 63,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/exercise/200',
+            name: 'Clifford Gilbert'
+        },
+        content: 'out substance agree actual known balance thus school slow upward orange fun no safe community heat softly mud bush owner pet pool consist duck'
+    },
+    {
+        id: 34,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/smallest/200',
+            name: 'Sarah Dean'
+        },
+        content: 'waste prize be journey weigh cage learn pole brush congress quarter habit for clearly sure century drew music travel noon recent activity sharp consist'
+    },
+    {
+        id: 81,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/only/200',
+            name: 'Annie Gill'
+        },
+        content: 'wear mine family bare use promised something brought case sang save hill railroad gentle large generally minute recall meant if journey subject officer free'
+    },
+    {
+        id: 17,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/wagon/200',
+            name: 'Mamie Ballard'
+        },
+        content: 'orange grass join back outside sight known different win instrument provide atom meal pool rose range powerful donkey continent metal east mountain correctly meant'
+    },
+    {
+        id: 92,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/small/200',
+            name: 'Myrtie Alvarado'
+        },
+        content: 'frozen jump mark modern thou speech strong decide contain asleep famous plant maybe curve further country steep worse stay least son bit library available'
+    },
+    {
+        id: 25,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/father/200',
+            name: 'Edgar Bryan'
+        },
+        content: 'probably tiny opposite act mass everyone provide hungry spent thing pipe closer square egg given shells anything evening nearby run airplane record orbit society'
+    },
+    {
+        id: 52,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/saw/200',
+            name: 'Isabella Lopez'
+        },
+        content: 'caught enemy sink cake truck vertical review golden other compound familiar ring rate letter slave spring cage supper hello fear volume heading create wind'
+    },
+    {
+        id: 52,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/capital/200',
+            name: 'Johnny Banks'
+        },
+        content: 'knew race process balloon tower tune believed amount how wife everybody human alone fast dark write scene sun sent cattle born grass shadow land'
+    },
+    {
+        id: 20,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/needs/200',
+            name: 'Ola Lee'
+        },
+        content: 'farther fewer teach smallest steam train twice fun thing egg collect has pocket improve pair basis box chamber rock zero cross threw trouble lonely'
+    },
+    {
+        id: 584,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/father/200',
+            name: 'Edgar Bryan'
+        },
+        content: 'probably tiny opposite act mass everyone provide hungry spent thing pipe closer square egg given shells anything evening nearby run airplane record orbit society'
+    },
+    {
+        id: 952,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/saw/200',
+            name: 'Isabella Lopez'
+        },
+        content: 'caught enemy sink cake truck vertical review golden other compound familiar ring rate letter slave spring cage supper hello fear volume heading create wind'
+    },
+    {
+        id: 512,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/capital/200',
+            name: 'Johnny Banks'
+        },
+        content: 'knew race process balloon tower tune believed amount how wife everybody human alone fast dark write scene sun sent cattle born grass shadow land'
+    },
+    {
+        id: 217,
+        author: {
+            avatar_url: 'https://picsum.photos/seed/needs/200',
+            name: 'Ola Lee'
+        },
+        content: 'farther fewer teach smallest steam train twice fun thing egg collect has pocket improve pair basis box chamber rock zero cross threw trouble lonely'
+    },
+])
 </script>
 
 <style lang="scss" scoped>
@@ -162,121 +348,324 @@ function getRandomColor() {
     display: flex;
     padding: 60px; 
     max-height: 100%;
-    &-menu {
+    &-main {
         display: flex;
-        flex-direction: column;
-        background-color: $light_background;
-        box-shadow: -4px 4px 8px 6px rgba($dark_background, 0.1);
-        padding: 20px;
-        border-radius: 40px;
-        button {
-            padding: 0;
-            background-color: transparent;
-            border: none;
+        max-height: 100%;
+        box-shadow: -4px 4px 8px 6px rgba($lighter_blue, 0.1);
+        padding: 24px;
+        border-radius: 64px;
+        width: 100%;
+        &-menu {
             display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .new {
-            border-radius: 50px;
-            padding: 8px 12px;
-            font-size: 24px;
-            gap: 20px;
-            .icon {
-                display: grid;
-                place-items: center;
-                font-size: 48px;
-                border-radius: 50%;
-                color: $primary_blue;
-                background-color: lighten($lighter_blue, 20%);
-                width: 60px;
-                aspect-ratio: 1;
-                svg {
-                    position: absolute;
-                }
-            }
-        }
-
-        .search {
-            display: flex;
-            align-items: center;
+            flex-direction: column;
+            background-color: $light_background;
+            box-shadow: -4px 4px 8px 6px rgba($lighter_blue, 0.1);
+            border-radius: 52px;
+            padding-bottom: 24px;
             position: relative;
-            margin-block: 24px 20px;
-            input {
-                padding: 8px 40px 8px 16px;
-                background-color: $light_background;
-                border: 2px solid darken($light_background, 10%);
-                border-radius: 50px;
-                width: 100%;
-                transition: border-color 0.4s ease;
-                &:focus, &:hover {
-                    border: 2px solid darken($light_background, 20%);
-                    outline: none;
-                }
-                &::placeholder {
-                    color: darken($light_background, 15%);
-                }
+            max-width: 100px;
+            transition: all 0.5s ease;
+            &.active {
+                max-width: 400px;
             }
-            span {
+            &:after {
+                content: '';
                 position: absolute;
-                right: 12px;
-                font-size: 24px;
-                color: darken($light_background, 35%);
-                margin-bottom: 2px;
+                width: 100%;
+                height: 30%;
+                bottom: 0px;
+                background-image: linear-gradient(transparent 40%, $light_background);
+                border-radius: inherit;
             }
-        }
-        .items {
-            flex-grow: 1;
-            overflow-y: auto;
-
-            ul {
-                li {
-                    button {
-                        figure {
-                            flex-grow: 1;
-                            flex-shrink: 0;
-                            max-width: 120px;
-                            border-radius: 12px;
-                            overflow: hidden;
-                            border: 4px solid;
-                            &.blue {
-                                border-color: $primary_blue;
+            button {
+                padding: 0;
+                background-color: transparent;
+                border: none;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            
+        &-header {
+            background-color: $primary_pink;
+            padding: 20px;
+            border-radius: 52px 52px 0 0;
+            .new {
+                border-radius: 50px;
+                font-size: 24px;
+                gap: 20px;
+                color: $light_background;
+                white-space: nowrap;
+                transition: all 0.5s ease;
+                padding-block: 8px;
+                &.active {
+                    padding-inline: 12px;
+                    .text {
+                        width: 100% !important;
+                    }
+                }
+                .icon {
+                    flex-shrink: 0;
+                    display: grid;
+                    place-items: center;
+                    font-size: 48px;
+                    border-radius: 50%;
+                    color: $primary_pink;
+                    background-color: $light_background;
+                    width: 60px;
+                    aspect-ratio: 1;
+                    svg {
+                        position: absolute;
+                    }
+                }
+    
+                .text {
+                    transition: all 0.5s ease;
+                    display: block;
+                    width: 0;
+                    overflow: hidden;
+                }
+            }
+        
+            .search {
+                display: flex;
+                align-items: center;
+                position: relative;
+                margin-top: 24px;
+                &.active {
+                    input {
+                        padding: 8px 40px 8px 16px !important;
+                        max-width: 400px !important;
+                    }
+                    span {
+                        right: 20px !important;
+                    }
+                }
+                input {
+                    padding: 8px 40px 8px 0;
+                    max-width: 40px;
+                    margin-inline: auto;
+                    background-color: $light_background;
+                    border: none;
+                    border-radius: 50px;
+                    width: 100%;
+                    transition: all 0.5s ease;
+                    &:focus, &:hover {
+                        outline: none;
+                    }
+                    &::placeholder {
+                        color: lighten($primary_pink, 30%);
+                    }
+                }
+                span {
+                    position: absolute;
+                    right: 18px;
+                    font-size: 24px;
+                    color: $primary_pink;
+                    margin-bottom: 2px;
+                    transition: all 0.5s ease;
+                }
+            }
+        } 
+    
+            .items {
+                flex-grow: 1;
+                overflow-y: auto;
+                margin-top: 20px;
+                &.active {
+                    ul {
+                        padding-inline: 20px !important;
+                        li {
+                            button {
+                                gap: 16px !important;
+                                p {
+                                    width: 30ch !important;
+                                }
                             }
-                            &.light-blue {
-                                border-color: $light_blue;
+                        }
+                    }
+                }
+    
+                ul {
+                    align-items: center;
+                    padding: 0;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    transition: all 0.5s ease;
+                    li {
+                        button {
+                            padding: 8px;
+                            border-radius: 20px;
+                            background-color: $pure_white;
+                            text-align: left;
+                            align-items: flex-start;
+                            gap: 0;
+                            box-shadow: 0px 0px 8px 2px rgba($lighter_blue, 0.1);
+                            color: $text_color;
+                            transition: all 0.5s ease;
+    
+                            figure {
+                                flex-grow: 1;
+                                flex-shrink: 0;
+                                max-width: 52px;
+                                border-radius: 12px;
+                                overflow: hidden;
+                                border: 4px solid;
+                                &.blue {
+                                    border-color: $primary_blue;
+                                }
+                                &.light-blue {
+                                    border-color: $light_blue;
+                                }
+                                &.lighter-blue {
+                                    border-color: $lighter_blue;
+                                }
+                                &.pink {
+                                    border-color: $primary_pink;
+                                }
+                                &.red {
+                                    border-color: $primary_red;
+                                }
+                                &.orange {
+                                    border-color: $primary_orange;
+                                }
+                                &.yellow {
+                                    border-color: $primary_yellow;
+                                }
+                                &.purple {
+                                    border-color: $primary_purple;
+                                }
+    
+    
+                                img {
+                                    object-fit: cover;
+                                }
                             }
-                            &.lighter-blue {
-                                border-color: $lighter_blue;
-                            }
-                            &.pink {
-                                border-color: $primary_pink;
-                            }
-                            &.red {
-                                border-color: $primary_red;
-                            }
-                            &.orange {
-                                border-color: $primary_orange;
-                            }
-                            &.yellow {
-                                border-color: $primary_yellow;
-                            }
-                            &.purple {
-                                border-color: $primary_purple;
-                            }
-
-
-                            img {
-                                object-fit: cover;
+    
+                            p {
+                                overflow: hidden;
+                                width: 0;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                                transition: all 0.5s ease;
+                                strong {
+                                    display: block;
+                                }
+                                span {
+                                    font-size: 14px;
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
-    &-content {
-        padding: 12px 40px;
+        &-content {
+            width: 100%;
+            padding: 12px 40px;
+            max-height: 100%;
+            overflow: auto;
+            &-header {
+                display: flex;
+                gap: 20px;
+                figure {
+                    flex-grow: 1;
+                    flex-shrink: 0;
+                    max-width: 68px;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    border: 4px solid $primary_orange;
+                }
+
+                &-text {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 20px;
+
+                    span {
+                        h2 {
+                            font-family: 'Nunito';
+                        }
+                    }
+
+                    button {
+                        border: none;
+                        padding: 12px;
+                        background-color: transparent;
+                        font-size: 24px;
+                        color: $text_color;
+                        transition: all 0.2s ease;
+                        cursor: pointer;
+                        margin-top: -12px;
+                        &:hover {
+                            opacity: 0.6;
+                        }
+                        &:focus {
+                            opacity: 0.4;
+                            outline: transparent;
+                        }
+                    }
+                }
+            }
+
+            &-messages {
+                ul {
+                    margin-block: 52px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 40px;
+                    li {
+                        display: flex;
+                        justify-content: flex-start;
+                        & > figure {
+                            max-width: 40px;
+                            border-radius: 50%;
+                            overflow: hidden;
+                            border: 2px solid $primary_purple;
+                            position: relative;
+                            top: 32px;
+                            margin-right: 20px;
+                        }
+                        & > span {
+                            display: block;
+                            background-color: $primary_purple;
+                            color: $light_background;
+                            border-radius: 20px 20px 20px 0;
+                            padding: 8px 12px;
+                        }
+
+                        &.same-author {
+                            margin-right: 0px;
+                            margin-left: 80px;
+                            margin-bottom: -20px;
+                            &.inverted {
+                                margin-left: 0px;
+                                margin-right: 80px;
+                            }
+                            & > figure {
+                                display: none;
+                            }
+                            & > span {
+                                border-radius: 20px !important;
+                            }
+                        }
+
+                        &.inverted {
+                            justify-content: flex-end;
+                            & > figure {
+                                margin-left: 20px;
+                            }
+                            &> span {
+                                border-radius: 20px 20px 0 20px;
+                                order: -1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 </style>
