@@ -89,6 +89,9 @@
                         </li>
                     </ul>
                 </section>
+                <form @submit.prevent class="chat-main-content-form">
+                    <AppQuillEditor @update:model="getMessageValue"/>
+                </form>
             </main>
         </div>
     </div>
@@ -341,6 +344,13 @@ const messages = reactive([
         content: 'farther fewer teach smallest steam train twice fun thing egg collect has pocket improve pair basis box chamber rock zero cross threw trouble lonely'
     },
 ])
+
+const message = ref('')
+
+function getMessageValue(value) {
+    message.value = value
+    console.log(message.value)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -664,6 +674,11 @@ const messages = reactive([
                         }
                     }
                 }
+            }
+            &-form {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
             }
         }
     }
