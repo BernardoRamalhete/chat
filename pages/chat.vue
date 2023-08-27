@@ -90,7 +90,7 @@
                     </ul>
                 </section>
                 <form @submit.prevent class="chat-main-content-form">
-                    <AppQuillEditor @update:model="getMessageValue"/>
+                    <ChatMessageInputs/>
                 </form>
             </main>
         </div>
@@ -344,13 +344,6 @@ const messages = reactive([
         content: 'farther fewer teach smallest steam train twice fun thing egg collect has pocket improve pair basis box chamber rock zero cross threw trouble lonely'
     },
 ])
-
-const message = ref('')
-
-function getMessageValue(value) {
-    message.value = value
-    console.log(message.value)
-}
 </script>
 
 <style lang="scss" scoped>
@@ -377,15 +370,6 @@ function getMessageValue(value) {
             transition: all 0.5s ease;
             &.active {
                 max-width: 400px;
-            }
-            &:after {
-                content: '';
-                position: absolute;
-                width: 100%;
-                height: 30%;
-                bottom: 0px;
-                background-image: linear-gradient(transparent 40%, $light_background);
-                border-radius: inherit;
             }
             button {
                 padding: 0;
@@ -574,8 +558,10 @@ function getMessageValue(value) {
         &-content {
             width: 100%;
             padding: 12px 40px;
-            max-height: 100%;
-            overflow: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
             &-header {
                 display: flex;
                 gap: 20px;
@@ -621,11 +607,15 @@ function getMessageValue(value) {
             }
 
             &-messages {
+                overflow-y: auto;
+                height: 100%;
+                flex-grow: 1;
                 ul {
                     margin-block: 52px;
                     display: flex;
                     flex-direction: column;
                     gap: 40px;
+                    position: relative;
                     li {
                         display: flex;
                         justify-content: flex-start;
@@ -666,8 +656,10 @@ function getMessageValue(value) {
                             justify-content: flex-end;
                             & > figure {
                                 margin-left: 20px;
+                                border-color: $primary_pink;
                             }
                             &> span {
+                                background-color: $primary_pink;
                                 border-radius: 20px 20px 0 20px;
                                 order: -1;
                             }
@@ -676,9 +668,8 @@ function getMessageValue(value) {
                 }
             }
             &-form {
-                width: 100%;
-                position: fixed;
-                bottom: 0;
+                background-color: $light_background;
+                padding: 12px;
             }
         }
     }
