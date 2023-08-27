@@ -622,8 +622,8 @@ const messages = reactive([
                         & > figure {
                             flex-grow: 1;
                             flex-shrink: 0;
-                            height: 40px;
-                            width: 40px;
+                            max-height: 40px;
+                            max-width: 40px;
                             border-radius: 50%;
                             overflow: hidden;
                             border: 2px solid $primary_purple;
