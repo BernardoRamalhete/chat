@@ -45,3 +45,19 @@ input, button, textarea, select {
     white-space: nowrap; 
     width: 1px;
 }
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+  
+::-webkit-scrollbar-track {
+    background: $light_background;
+}
+  
+::-webkit-scrollbar-thumb {
+    background: $primary_pink;
+    border-radius: 050px;
+    &:hover {
+        background: rgba($primary_pink, 0.6);
+    }
+}
