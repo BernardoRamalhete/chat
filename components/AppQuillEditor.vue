@@ -23,10 +23,7 @@ onMounted(() => {
         isolateCharacter: true,
         modules: {
             toolbar: [
-                ['bold', 'italic', 'strike'],
-                ['link'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['clean']
+                ['bold', 'italic', 'strike']
             ],
             magicUrl: {
                 // Regex used to check URLs during typing
