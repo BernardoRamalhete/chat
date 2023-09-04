@@ -13,44 +13,136 @@
                         class="chat-main-menu-header-form"
                         @submit.prevent="addNewChat"
                     >
-                        <button 
-                            class="cancel" 
-                            type="button"
-                            @click="closeNewChatForm"
-                        >
-                            <span class="icon">
-                                <Icon name="quill:escape" aria-hidden/>
-                            </span>
-                            <span class="visually-hidden">Submit</span>
-                        </button>
-                        <label for="new-chat" class="visually-hidden">Email</label>
-                        <input 
-                            id="new-chat"
-                            v-model="newChatEmail"
-                            type="email" 
-                            :class="{ error: newChatEmailError }"
-                            placeholder="User's Email"
-                            required
-                        />
-                        <button>
-                            <span class="icon">
-                                <Icon name="quill:add" aria-hidden/>
-                            </span>
-                            <span class="visually-hidden">Submit</span>
-                        </button>
+                        <div>
+                            <button 
+                                class="cancel" 
+                                type="button"
+                                @click="closeNewChatForm"
+                            >
+                                <span class="icon">
+                                    <Icon name="quill:escape" aria-hidden/>
+                                </span>
+                                <span class="visually-hidden">Cancel</span>
+                            </button>
+                            <label for="new-chat" class="visually-hidden">Email</label>
+                            <input 
+                                id="new-chat"
+                                v-model="newChatEmail"
+                                type="email" 
+                                :class="{ error: newChatEmailError }"
+                                placeholder="User's Email"
+                                required
+                            />
+                            <button>
+                                <span class="icon">
+                                    <Icon name="quill:add" aria-hidden/>
+                                </span>
+                                <span class="visually-hidden">Submit</span>
+                            </button>
+                        </div>
+                    </form>
+                    <form
+                        v-else-if="showNewGroupForm && activeChat"
+                        class="chat-main-menu-header-form" 
+                        @submit.prevent="createGroup"
+                    >
+                        <div>
+                            <label for="new-group" class="visually-hidden">Group name</label>
+                            <input 
+                                id="new-group"
+                                v-model="newGroupName"
+                                type="text" 
+                                :class="{ error: newGroupNameError }"
+                                placeholder="Group Name"
+                                required
+                            />
+                        </div>
+                        <ul>
+                            <li>
+                                <strong>
+                                    Participants
+                                </strong>
+                            </li>
+                            <li v-for="user in usersOptions" :key="user.email">
+                                <input 
+                                    :id="user.email" 
+                                    :checked="newGroupMembers.includes(user.email)"
+                                    type="checkbox" 
+                                    class="checkbox"
+                                    @change="toggleGroupMemberSelection(user.email)"
+                                />
+                                <div>
+                                    <Icon name="quill:checkmark" aria-hidden/>
+                                </div>
+                                <label :for="user.email">{{ user.name }}</label>
+                            </li>
+                            <li>
+                                <label for="new-member-email" class="visually-hidden">Add new participant by email</label>
+                                <input 
+                                    id="new-member-email"
+                                    v-model="newGroupMemberEmail"
+                                    type="email" 
+                                    placeholder="Add by email"
+                                    :class="{ error: newGroupMemberEmailError }"
+                                />
+                                <button 
+                                    type="button" 
+                                    class="cancel"
+                                    @click="addNewEmailToGroupList"
+                                >
+                                    <span class="icon">
+                                        <Icon name="quill:add" aria-hidden/>
+                                    </span>
+                                    <span class="visually-hidden">Add user</span>
+                                </button>
+                            </li>
+                        </ul>
+                        <footer>
+                            <button 
+                                class="cancel" 
+                                type="button"
+                                @click="closeNewGroupForm"
+                            >
+                                <span class="icon">
+                                    <Icon name="quill:escape" aria-hidden/>
+                                </span>
+                                <span class="visually-hidden">Cancel</span>
+                            </button>
+                            <button 
+                                class="cancel"
+                            >
+                                <span class="icon">
+                                    <Icon name="quill:checkmark" aria-hidden/>
+                                </span>
+                                <span class="visually-hidden">Submit</span>
+                            </button>
+                        </footer>
                     </form>
                     <button 
                         v-else
                         class="new" 
                         :class="{ active: activeChat }"
-                        @click="openNewChatForm"
+                        @click="openNewDropdownOptions"
                     >
                         <span class="icon">
                             <Icon name="quill:add" aria-hidden/>
                         </span>
-                        <span class="text">New chat</span>
+                        <span class="text">New</span>
                     </button>
+                    <ul v-if="showNewDropdownOptions && activeChat" class="dropdown">
+                        <li>
+                            <button @click="openNewChatForm">
+                                Chat
+                            </button>
+                        </li>
+                        <li>
+                            <button @click="openNewGroupForm">
+                                Group
+                            </button>
+                        </li>
+                    </ul>
                     <div 
+                        v-if="!showNewChatForm && !showNewGroupForm"
                         class="search" 
                         :class="{ active: activeChat }"
                     >
@@ -208,21 +300,31 @@ function setActiveChat(value) {
     activeChat.value = value
 }
 
+const showNewDropdownOptions = ref(false)
+function openNewDropdownOptions() {
+    showNewDropdownOptions.value = true
+}
+function closeNewDropdownOptions() {
+    showNewDropdownOptions.value = false
+}
+
 const showNewChatForm = ref(false)
+const newChatEmail = ref('')
+const newChatEmailError = ref(false)
 function openNewChatForm() {
     showNewChatForm.value = true
+    closeNewDropdownOptions()
 }
 function closeNewChatForm() {
     showNewChatForm.value = false
+    newChatEmail.value = ''
+    newChatEmailError.value = false
 }
-
-const newChatEmail = ref('')
-const newChatEmailError = ref(false)
 
 function validateEmail(email) {
     const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
 
-    const hasAdded = chats.value.filter(chat => chat.users.length < 2 && chat.users[0].toLowerCase() == email.toLowerCase()).length > 0
+    const hasAdded = chats.value.filter(chat => !chat.is_group && chat.users[0].toLowerCase() == email.toLowerCase()).length > 0
 
     return validEmail && !hasAdded
 }
@@ -245,6 +347,77 @@ function addNewChat() {
     newChatEmail.value = ''
 }
 
+const usersOptions = computed(() => {
+    const options = []
+    chats.value.map(chat => options.push(...chat.users))
+    return [...options, ...participantsAddedByEmail.value]
+})
+
+const newGroupName = ref('')
+const newGroupMembers = ref([])
+const newGroupMemberEmail = ref('')
+const participantsAddedByEmail = ref([])
+const newGroupMemberEmailError = ref(false)
+const newGroupMembersError = ref(false)
+const newGroupNameError = ref(false)
+const showNewGroupForm = ref(false)
+function openNewGroupForm() {
+    showNewGroupForm.value = true
+    closeNewDropdownOptions()
+}
+function closeNewGroupForm() {
+    showNewGroupForm.value = false
+    newGroupName.value = ''
+    newGroupNameError.value = false
+    newGroupMembers.value = []
+    newGroupMembersError.value = false
+    newGroupMemberEmail.value = ''
+    newGroupMemberEmailError.value = false
+    participantsAddedByEmail.value = []
+}
+
+function addNewEmailToGroupList() {
+    const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(newGroupMemberEmail.value)
+    const usedEmail = usersOptions.value.find(user => user.email == newGroupMemberEmail.value) != undefined
+
+    if(!validEmail || usedEmail) {
+        newGroupMemberEmail.value = ''
+        newGroupMemberEmailError.value = true
+        console.log('foo')
+        return
+    }
+    
+    participantsAddedByEmail.value.push({ email: newGroupMemberEmail.value, name: newGroupMemberEmail.value })
+    newGroupMembers.value.push(newGroupMemberEmail.value)
+    newGroupMemberEmail.value = ''
+}
+
+function toggleGroupMemberSelection(email) {
+    if(newGroupMembers.value.includes(email)) {
+        newGroupMembers.value = newGroupMembers.value.filter(user => user != email)
+        return
+    }
+    newGroupMembers.value.push(email)
+}
+
+function createGroup() {
+    newGroupNameError.value = newGroupName.value == ''
+    newGroupMembersError.value = newGroupMembers.value.length == 0
+
+    if(newGroupMembersError.value || newGroupNameError.value) return
+
+    create('chats', {
+        users: [...newGroupMembers.value, userData.value.email],
+        name: newGroupName.value,
+        status: '',
+        messages: [],
+        is_group: true,
+        color: getRandomColor()
+    })
+
+    closeNewGroupForm()
+}
+
 const message = ref('')
 function getMessageContent(value) {
     message.value = value
@@ -259,7 +432,6 @@ function handleSendMessage() {
         content: message.value,
         createdAt: new Date()
     }
-    console.log(selectedChatId.value)
     sendMessage(selectedChatId.value, messageData)
 
     document.querySelector('.ql-editor').innerHTML = ''
@@ -308,11 +480,14 @@ function handleSendMessage() {
             background-color: $primary_pink;
             padding: 20px;
             border-radius: 52px 52px 0 0;
+            position: relative;
             
             &-form {
                 padding-block: 20px;
-                display: flex;
-                align-items: center;
+                & > div {
+                    display: flex;
+                    align-items: center;
+                }
                 input {
                     padding: 8px 16px;
                     margin-inline: 12px;
@@ -350,6 +525,69 @@ function handleSendMessage() {
                         border-radius: 50%;
                     }
                 }
+
+                ul {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    margin-block: 12px;
+                    li {
+                        display: flex;
+                        align-items: center;
+                        position: relative;
+                        padding-inline: 12px; 
+                        color: $light_background;
+                        input {
+                            margin-inline: 0;
+                            margin-right: 8px;
+                        }
+                        .checkbox {
+                            width: 20px;
+                            aspect-ratio: 1;
+                            position: absolute;
+                            opacity: 0;
+
+                            & + div {
+                                width: 20px;
+                                aspect-ratio: 1;
+                                background-color: $light_background;
+                                border-radius: 4px;
+                                position: relative;
+                                cursor: pointer;
+                                svg {
+                                    position: absolute;
+                                    font-size: 20px;
+                                    color: $primary_pink;
+                                    opacity: 0;
+                                    transition: all 0.2s ease;
+                                }
+                            }
+
+                            
+
+                            &:checked {
+                                & + div {
+                                    svg {
+                                        opacity: 1;
+                                    }
+                                }
+                            }
+                        }
+
+                        label {
+                            color: $light_background;
+                            padding-left: 8px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                footer {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin: 24px 12px 0 12px;
+                }
             }
             .new {
                 border-radius: 50px;
@@ -359,6 +597,7 @@ function handleSendMessage() {
                 white-space: nowrap;
                 transition: all 0.5s ease;
                 padding-block: 8px;
+                position: relative;
                 &.active {
                     padding-inline: 12px;
                     .text {
@@ -385,6 +624,34 @@ function handleSendMessage() {
                     display: block;
                     width: 0;
                     overflow: hidden;
+                }
+            }
+            .dropdown {
+                position: absolute;
+                left: 40%;
+                top: calc(50% - 20px);
+                z-index: 10;
+                background-color: $light_background;
+                border-radius: 12px;
+                overflow: hidden;
+                border: 1px solid $primary_pink;
+                box-shadow: 0px 0px 8px 2px rgba($light_background, 0.8);
+                li {
+                    &:first-of-type {
+                        border-bottom: 1px solid $primary_pink;
+                    }
+                    button {
+                        width: 100%;
+                        text-align: center;
+                        font-size: 18px;
+                        color: $primary_pink;
+                        padding: 4px 8px;
+                        transition: all 0.4s ease;
+                        &:hover {
+                            background-color: $light_pink;
+                            color: $light_background;
+                        }
+                    }
                 }
             }
         
