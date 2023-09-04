@@ -1,7 +1,7 @@
 <template>
     <div class="chat-inputs">
-        <AppQuillEditor @update:model="getMessageValue"/>
-        <button class="img">
+        <AppQuillEditor @update:model="updateMessage"/>
+        <button class="img" type="button">
             <span class="visually-hidden">Attach image</span>
             <Icon name="ph:image"/>
         </button>
@@ -13,12 +13,10 @@
 </template>
 
 <script setup>
+const emits = defineEmits(['update:message'])
 
-const message = ref('')
-
-function getMessageValue(value) {
-    message.value = value
-    console.log(message.value)
+function updateMessage(message) {
+    emits('update:message', message)
 }
 </script>
 
