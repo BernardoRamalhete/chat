@@ -8,9 +8,42 @@
                 @mouseleave="setActiveChat(false)"
             >
                 <header class="chat-main-menu-header">
+                    <form 
+                        v-if="showNewChatForm && activeChat"
+                        class="chat-main-menu-header-form"
+                        @submit.prevent="addNewChat"
+                    >
+                        <button 
+                            class="cancel" 
+                            type="button"
+                            @click="closeNewChatForm"
+                        >
+                            <span class="icon">
+                                <Icon name="quill:escape" aria-hidden/>
+                            </span>
+                            <span class="visually-hidden">Submit</span>
+                        </button>
+                        <label for="new-chat" class="visually-hidden">Email</label>
+                        <input 
+                            id="new-chat"
+                            v-model="newChatEmail"
+                            type="email" 
+                            :class="{ error: newChatEmailError }"
+                            placeholder="User's Email"
+                            required
+                        />
+                        <button>
+                            <span class="icon">
+                                <Icon name="quill:add" aria-hidden/>
+                            </span>
+                            <span class="visually-hidden">Submit</span>
+                        </button>
+                    </form>
                     <button 
+                        v-else
                         class="new" 
                         :class="{ active: activeChat }"
+                        @click="openNewChatForm"
                     >
                         <span class="icon">
                             <Icon name="quill:add" aria-hidden/>
@@ -26,6 +59,7 @@
                         </label>
                         <input 
                             id="chat-search" 
+                            v-model="searchValue"
                             type="text"
                             placeholder="Search for..."
                         />
@@ -42,10 +76,13 @@
                     :class="{ active: activeChat }"
                 >
                     <ul>
-                        <li v-for="chat in chats">
-                            <button>
-                                <figure :class="getRandomColor()">
-                                    <img :src="chat.image" alt=""/>
+                        <li v-for="chat in filteredChats">
+                            <button @click="selectChat(chat)">
+                                <figure :class="chat.color">
+                                    <img 
+                                        :src="chat.image ?? `https://ui-avatars.com/api/?name=${chat.name.charAt(0)}&background=8338ec&color=fff&length=1`" 
+                                        alt=""
+                                    />
                                 </figure>
                                 <p>
                                     <strong>{{ chat.name }}</strong>
@@ -56,15 +93,17 @@
                     </ul>
                 </nav>
             </aside>
-            <main class="chat-main-content">
+            <main v-if="selectedChat" class="chat-main-content">
                 <header class="chat-main-content-header">
-                    <figure>
-                        <img src="https://picsum.photos/seed/batata/200" alt=""/>
+                    <figure :class="selectedChat.color">
+                        <img :src="selectedChat.image ?? `https://ui-avatars.com/api/?name=${selectedChat.name.charAt(0)}&background=8338ec&color=fff&length=1`" alt=""/>
                     </figure>
                     <div class="chat-main-content-header-text">
                         <span>
-                            <h2>Lora Carlson</h2>
-                            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, ut?</p>
+                            <h2>{{ selectedChat.name }}</h2>
+                            <p>
+                                {{ selectedChat.status }}
+                            </p>
                         </span>
                         <button>
                             <Icon name="quill:meatballs-h"/>
@@ -75,22 +114,22 @@
                 <section ref="messagesWrapper" class="chat-main-content-messages">
                     <ul>
                         <li 
-                            v-for="(message, index) in messages" 
+                            v-for="(message, index) in selectedChat.messages" 
                             :key="message.id"
                             :class="[{ 
-                                inverted: message.author.name === 'Chris Larson',
-                                'same-author': messages[index + 1] != undefined && messages[index + 1].author.name === message.author.name
+                                inverted: message.author.email === userData.email,
+                                'same-author': selectedChat.messages[index + 1] != undefined && selectedChat.messages[index + 1].author.email === message.author.email
                             }, 'chat-message']"
                         >
                             <figure>
-                                <img :src="message.author.avatar_url" alt=""/>
+                                <img :src="message.author.image" alt=""/>
                             </figure>
                             <span v-html="message.content"/>
                         </li>
                     </ul>
                 </section>
-                <form @submit.prevent class="chat-main-content-form">
-                    <ChatMessageInputs/>
+                <form @submit.prevent="handleSendMessage" class="chat-main-content-form">
+                    <ChatMessageInputs @update:message="getMessageContent"/>
                 </form>
             </main>
         </div>
@@ -102,10 +141,12 @@ definePageMeta({
     middleware: ['auth']
 })
 
+const { create, sendMessage } = useFirebaseDb()
+
 const messagesWrapper = ref(null)
 
 function scrollToLastMessage() {
-    if(process.server) return
+    if(messagesWrapper.value == undefined) return
     messagesWrapper.value.scrollTop = messagesWrapper.value.scrollHeight
 }
 
@@ -120,88 +161,30 @@ const userData = computed(() => {
     return user.value || userCookie.value
 })
 
-const chats = reactive([
-    {
-        id: 13,
-        name: 'Chris Larson',
-        status: 'leader electric any corner safety grandmother number various rope black effort mathematics secret type aware night guide rapidly chamber hidden joy wherever fireplace central',
-        image: `https://picsum.photos/seed/chose/200`
-    },
-    {
- 
-        id: 55,
-        name: 'Mathilda Vargas',
-        status: 'rocket finger information perfect since breakfast upper surface mad all farther sleep church able moving term also cannot religious star handle different breathing morning',
-        image: `https://picsum.photos/seed/place/200`
-    },
-    {
- 
-        id: 24,
-        name: 'Maurice Gutierrez',
-        status: 'kids fog upper vast pipe both son special common pass volume melted anyone fair today know facing stairs north negative successful dirty cost firm',
-        image: `https://picsum.photos/seed/lady/200`
-    },
-    {
-        id: 33,
-        name: 'Bernice Bell',
-        status: 'snow except composition village cut possible sight piece mathematics chose as jack parallel you neighborhood unknown value captured hall plenty season driving heading found',
-        image: `https://picsum.photos/seed/folks/200`
-    },
-    {
-        id: 80,
-        name: 'Dominic Montgomery',
-        status: 'jack modern game ability corn to name mice flies adventure care consider ago stronger mail balloon fewer built faster roll yet percent single then',
-        image: `https://picsum.photos/seed/first/200`
-    },
-    {
-        id: 57,
-        name: 'Alex Lyons',
-        status: 'of mind slide sound anyone fewer attached lost stretch suggest alphabet silly fly central everywhere twenty month property jack below view family title chapter',
-        image: `https://picsum.photos/seed/out/200`
-    },
-    {
-        id: 62,
-        name: 'Ella Hanson',
-        status: 'gray war conversation compound where breathing musical border harbor future group help west body pound driver soft crew nearer give satisfied quite new alone',
-        image: `https://picsum.photos/seed/truck/200`
-    },
-    {
-        id: 49,
-        name: 'Birdie Lloyd',
-        status: 'am average main helpful everywhere radio shut globe box stay without means wall buy mud army girl exist may instrument began swimming tomorrow pen',
-        image: `https://picsum.photos/seed/card/200`
-    },
-    {
-        id: 22,
-        name: 'Bryan Snyder',
-        status: 'shirt quite else column lower four in burst hung rocky task saved needle bicycle rubber mass pupil elephant possibly grade arrive information ought barn',
-        image: `https://picsum.photos/seed/engine/200`
-    },
-    {
-        id: 42,
-        name: 'Edna Saunders',
-        status: 'slow taste express terrible bill verb stand better split stomach stay concerned fuel jar simple positive strip mother also pie recent shorter younger vegetable',
-        image: `https://picsum.photos/seed/magnet/200`
-    },
-    {
-        id: 64,
-        name: 'Jesus Mullins',
-        status: 'wire felt course hundred sum brief underline village recognize shorter became member race too window clay shape opinion mouse directly useful ring environment settlers',
-        image: `https://picsum.photos/seed/care/200`
-    },
-    {
-        id: 52,
-        name: 'Irene Powers',
-        status: 'fierce studying duty naturally roll political temperature visitor later open among weather labor swing probably pleasure will next tea remember count current particles follow',
-        image: `https://picsum.photos/seed/anywhere/200`
-    },
-    {
-        id: 97,
-        name: 'Jerome Morgan',
-        status: 'eye influence powder neighbor play some wide money explain troops wool fresh get local studied sometime worse hair correct hide edge floor mirror trade',
-        image: `https://picsum.photos/seed/compare/200`
+const chats = useState('chats')
+
+const searchValue = ref('')
+
+const filteredChats = computed(() => {
+    const search = searchValue.value.toLocaleLowerCase()
+    if(Array.isArray(chats.value)) {
+        return chats.value.filter(chat => chat.name.toLowerCase().includes(search))
     }
-])
+    return []
+})
+
+const selectedChatId = ref(Array.isArray(chats.value) && chats.value.length > 0 ? chats.value[0].id : null)
+
+function selectChat(chat) {
+    selectedChatId.value = chat.id
+    setTimeout(() => {
+        scrollToLastMessage()
+    }, 300)
+}
+
+const selectedChat = computed(() => {
+    return chats.value.find(chat => chat.id == selectedChatId.value)
+})
 
 const colors = [
     'blue',
@@ -225,143 +208,72 @@ function setActiveChat(value) {
     activeChat.value = value
 }
 
-const messages = reactive([
-    {
-        id: 40,
+const showNewChatForm = ref(false)
+function openNewChatForm() {
+    showNewChatForm.value = true
+}
+function closeNewChatForm() {
+    showNewChatForm.value = false
+}
+
+const newChatEmail = ref('')
+const newChatEmailError = ref(false)
+
+function validateEmail(email) {
+    const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+
+    const hasAdded = chats.value.filter(chat => chat.users.length < 2 && chat.users[0].toLowerCase() == email.toLowerCase()).length > 0
+
+    return validEmail && !hasAdded
+}
+
+function addNewChat() {
+    newChatEmailError.value = false
+    if(!validateEmail(newChatEmail.value)) {
+        newChatEmail.value = ''
+        newChatEmailError.value = true
+        return
+
+    }
+    create('chats', {
+        users: [ userData.value.email, newChatEmail.value ],
+        messages: [],
+        is_group: false,
+        color: getRandomColor()
+    })
+
+    newChatEmail.value = ''
+}
+
+const message = ref('')
+function getMessageContent(value) {
+    message.value = value
+}
+
+function handleSendMessage() {
+    const messageData = {
         author: {
-            avatar_url: 'https://picsum.photos/seed/general/200',
-            name: 'Chris Larson'
+            email: userData.value.email,
+            image: userData.value.image
         },
-        content: 'powder better is bad plural examine itself alive which minute bring shine continent spread escape law out beyond closely wait proper do came sides'
-    },
-    {
-        id: 87,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/gas/200',
-            name: 'Chris Larson'
-        },
-        content: 'local up nor chose structure dust crew gift properly donkey village at canal bowl name observe adventure stronger dream ancient problem several fish saw'
-    },
-    {
-        id: 68,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/occur/200',
-            name: 'Chris Larson'
-        },
-        content: 'load sell maybe gradually fresh pictured pretty now equally missing feet her respect football gain here dirt bad faster troops period course contain sitting'
-    },
-    {
-        id: 63,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/exercise/200',
-            name: 'Clifford Gilbert'
-        },
-        content: 'out substance agree actual known balance thus school slow upward orange fun no safe community heat softly mud bush owner pet pool consist duck'
-    },
-    {
-        id: 34,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/smallest/200',
-            name: 'Sarah Dean'
-        },
-        content: 'waste prize be journey weigh cage learn pole brush congress quarter habit for clearly sure century drew music travel noon recent activity sharp consist'
-    },
-    {
-        id: 81,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/only/200',
-            name: 'Annie Gill'
-        },
-        content: 'wear mine family bare use promised something brought case sang save hill railroad gentle large generally minute recall meant if journey subject officer free'
-    },
-    {
-        id: 17,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/wagon/200',
-            name: 'Mamie Ballard'
-        },
-        content: 'orange grass join back outside sight known different win instrument provide atom meal pool rose range powerful donkey continent metal east mountain correctly meant'
-    },
-    {
-        id: 92,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/small/200',
-            name: 'Myrtie Alvarado'
-        },
-        content: 'frozen jump mark modern thou speech strong decide contain asleep famous plant maybe curve further country steep worse stay least son bit library available'
-    },
-    {
-        id: 25,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/father/200',
-            name: 'Edgar Bryan'
-        },
-        content: 'probably tiny opposite act mass everyone provide hungry spent thing pipe closer square egg given shells anything evening nearby run airplane record orbit society'
-    },
-    {
-        id: 52,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/saw/200',
-            name: 'Isabella Lopez'
-        },
-        content: 'caught enemy sink cake truck vertical review golden other compound familiar ring rate letter slave spring cage supper hello fear volume heading create wind'
-    },
-    {
-        id: 52,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/capital/200',
-            name: 'Johnny Banks'
-        },
-        content: 'knew race process balloon tower tune believed amount how wife everybody human alone fast dark write scene sun sent cattle born grass shadow land'
-    },
-    {
-        id: 20,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/needs/200',
-            name: 'Ola Lee'
-        },
-        content: 'farther fewer teach smallest steam train twice fun thing egg collect has pocket improve pair basis box chamber rock zero cross threw trouble lonely'
-    },
-    {
-        id: 584,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/father/200',
-            name: 'Edgar Bryan'
-        },
-        content: 'probably tiny opposite act mass everyone provide hungry spent thing pipe closer square egg given shells anything evening nearby run airplane record orbit society'
-    },
-    {
-        id: 952,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/saw/200',
-            name: 'Isabella Lopez'
-        },
-        content: 'caught enemy sink cake truck vertical review golden other compound familiar ring rate letter slave spring cage supper hello fear volume heading create wind'
-    },
-    {
-        id: 512,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/capital/200',
-            name: 'Johnny Banks'
-        },
-        content: 'knew race process balloon tower tune believed amount how wife everybody human alone fast dark write scene sun sent cattle born grass shadow land'
-    },
-    {
-        id: 217,
-        author: {
-            avatar_url: 'https://picsum.photos/seed/needs/200',
-            name: 'Ola Lee'
-        },
-        content: 'farther fewer teach smallest steam train twice fun thing egg collect has pocket improve pair basis box chamber rock zero cross threw trouble lonely'
-    },
-])
+        content: message.value,
+        createdAt: new Date()
+    }
+    console.log(selectedChatId.value)
+    sendMessage(selectedChatId.value, messageData)
+
+    document.querySelector('.ql-editor').innerHTML = ''
+    setTimeout(() => {
+        scrollToLastMessage()
+    }, 100)
+}
 </script>
 
 <style lang="scss" scoped>
 .chat {
     display: flex;
     padding: 60px; 
-    max-height: 100%;
+    height: 100%;
     &-main {
         display: flex;
         max-height: 100%;
@@ -369,6 +281,7 @@ const messages = reactive([
         padding: 24px;
         border-radius: 64px;
         width: 100%;
+        height: 100%;
         &-menu {
             display: flex;
             flex-direction: column;
@@ -395,6 +308,49 @@ const messages = reactive([
             background-color: $primary_pink;
             padding: 20px;
             border-radius: 52px 52px 0 0;
+            
+            &-form {
+                padding-block: 20px;
+                display: flex;
+                align-items: center;
+                input {
+                    padding: 8px 16px;
+                    margin-inline: 12px;
+                    background-color: $light_background;
+                    border: none;
+                    border-radius: 50px;
+                    width: 100%;
+                    transition: all 0.5s ease;
+                    &:focus, &:hover {
+                        outline: transparent;
+                    }
+                    &::placeholder {
+                        color: rgba($light_background, 0.8);
+                        color: lighten($primary_pink, 30%);
+                    }
+                    &.error {
+                        background-color: $primary_red;
+                        color: $light_background;
+                        &::placeholder {
+                            color: rgba($light_background, 0.8);
+                        }
+                    }
+                }
+                button {
+                    padding: 0 20px;
+                    background-color: $light_background;
+                    color: $primary_pink;
+                    border-radius: 50px;
+                    font-size: 28px;
+                    max-height: 40px;
+
+                    &.cancel {
+                        padding: 4px 8px;
+                        font-size: 18px;
+                        border-radius: 50%;
+                    }
+                }
+            }
             .new {
                 border-radius: 50px;
                 font-size: 24px;
@@ -456,7 +412,7 @@ const messages = reactive([
                     width: 100%;
                     transition: all 0.5s ease;
                     &:focus, &:hover {
-                        outline: none;
+                        outline: transparent;
                     }
                     &::placeholder {
                         color: lighten($primary_pink, 30%);
@@ -582,7 +538,31 @@ const messages = reactive([
                     max-width: 68px;
                     border-radius: 12px;
                     overflow: hidden;
-                    border: 4px solid $primary_orange;
+                    border: 4px solid;
+                    &.blue {
+                        border-color: $primary_blue;
+                    }
+                    &.light-blue {
+                        border-color: $light_blue;
+                    }
+                    &.lighter-blue {
+                        border-color: $lighter_blue;
+                    }
+                    &.pink {
+                        border-color: $primary_pink;
+                    }
+                    &.red {
+                        border-color: $primary_red;
+                    }
+                    &.orange {
+                        border-color: $primary_orange;
+                    }
+                    &.yellow {
+                        border-color: $primary_yellow;
+                    }
+                    &.purple {
+                        border-color: $primary_purple;
+                    }
                 }
 
                 &-text {
@@ -621,6 +601,7 @@ const messages = reactive([
                 overflow-y: auto;
                 height: 100%;
                 flex-grow: 1;
+                scroll-behavior: smooth;
                 ul {
                     margin-block: 52px;
                     padding-inline: 20px;
