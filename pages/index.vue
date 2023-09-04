@@ -79,10 +79,7 @@
 </template>
 
 <script setup>
-const { user, signIn } = useFirebaseAuth()
-watch(user, () => {
-    if(user.value != undefined) navigateTo('/chat')
-})
+const { signIn } = useFirebaseAuth()
 </script>
 
 <style lang="scss">
