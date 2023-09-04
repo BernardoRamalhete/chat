@@ -324,7 +324,7 @@ function closeNewChatForm() {
 function validateEmail(email) {
     const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
 
-    const hasAdded = chats.value.filter(chat => !chat.is_group && chat.users[0].toLowerCase() == email.toLowerCase()).length > 0
+    const hasAdded = chats.value.filter(chat => !chat.is_group && chat.users[0].email.toLowerCase() == email.toLowerCase()).length > 0
 
     return validEmail && !hasAdded
 }
