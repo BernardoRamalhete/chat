@@ -72,15 +72,15 @@
                         </button>
                     </div>
                 </header>
-                <section class="chat-main-content-messages">
+                <section ref="messagesWrapper" class="chat-main-content-messages">
                     <ul>
                         <li 
                             v-for="(message, index) in messages" 
                             :key="message.id"
-                            :class="{ 
+                            :class="[{ 
                                 inverted: message.author.name === 'Chris Larson',
                                 'same-author': messages[index + 1] != undefined && messages[index + 1].author.name === message.author.name
-                            }"
+                            }, 'chat-message']"
                         >
                             <figure>
                                 <img :src="message.author.avatar_url" alt=""/>
@@ -100,6 +100,17 @@
 <script setup>
 definePageMeta({
     middleware: ['auth']
+})
+
+const messagesWrapper = ref(null)
+
+function scrollToLastMessage() {
+    if(process.server) return
+    messagesWrapper.value.scrollTop = messagesWrapper.value.scrollHeight
+}
+
+onMounted(() => {
+    scrollToLastMessage()
 })
 
 const { user } = useFirebaseAuth()
@@ -612,6 +623,7 @@ const messages = reactive([
                 flex-grow: 1;
                 ul {
                     margin-block: 52px;
+                    padding-inline: 20px;
                     display: flex;
                     flex-direction: column;
                     gap: 40px;
