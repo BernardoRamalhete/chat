@@ -9,14 +9,30 @@ export default function() {
 
     const signIn = async () => {
         return signInWithPopup($auth, provider)
-            .then((result) => {
+            .then(async (result) => {
                 const userCookie = useCookie('user')
-                userCookie.value = result.user
-                user.value = result.user
+                const { registeredUsersWithProvidedEmail, create } = useFirebaseDb()
+
+                let data = {
+                    email: result.user.email,
+                    image: result.user.photoURL,
+                    name: result.user.displayName,
+                    status: "Hey there, I'm using Nuxt Chat"
+                }
+
+                const fireBaseRegisteredUsers = await registeredUsersWithProvidedEmail(result.user.email)
+                if(fireBaseRegisteredUsers.length == 0) {
+                    data.id = await create('users', data)
+                } else {
+                    data = fireBaseRegisteredUsers[0]
+                }
+                userCookie.value = data
+                user.value = data
+                navigateTo('/chat')
             })
             .catch((error) => {
-                const errorCode = error.errorCode
-                const errorMessage = error.errorMessage
+                const errorCode = error.errorCode ?? '500'
+                const errorMessage = error.errorMessage ?? error
 
                 console.log(`${errorCode}: ${errorMessage}`)
             })
